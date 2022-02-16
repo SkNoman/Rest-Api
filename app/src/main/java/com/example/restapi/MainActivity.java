@@ -1,13 +1,18 @@
 package com.example.restapi;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,6 +29,8 @@ public class MainActivity extends AppCompatActivity
     private TextView t1;
     ProgressBar progressBar;
     String active_Status = "";
+    TextView loading;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -34,7 +41,10 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         setTitle("Employee Information");
         t1 = findViewById(R.id.t1);
+
         progressBar = findViewById(R.id.progressbar_id);
+        loading = findViewById(R.id.loading);
+        loading.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
 
         jsonTask jTask = new jsonTask();
@@ -47,6 +57,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected String doInBackground(String... strings) {
             progressBar.setVisibility(View.VISIBLE);
+            loading.setVisibility(View.VISIBLE);
             HttpURLConnection httpURLConnection = null;
             BufferedReader bufferedReader = null;
             String emp_id,emp_name,email_id,mobile_no,is_active,description;
@@ -69,6 +80,7 @@ public class MainActivity extends AppCompatActivity
                 String file = stringBuffer.toString();
                 JSONObject fileObject = new JSONObject(file);
                 JSONArray jsonArray = fileObject.getJSONArray("items");
+                //Toast.makeText(MainActivity.this, "Working", Toast.LENGTH_LONG).show();
                 for(int i=0; i<jsonArray.length();i++)
                 {
                     JSONObject arrayObject = jsonArray.getJSONObject(i);
@@ -78,8 +90,9 @@ public class MainActivity extends AppCompatActivity
                     mobile_no = arrayObject.getString("mobile_no");
                     emp_id = arrayObject.getString("emp_id");
                     is_active = arrayObject.getString("is_active");
-                    institute_id = arrayObject.getInt("institute_id");
+                  //  institute_id = arrayObject.getInt("institute_id");
                     description = arrayObject.getString("description");
+
                     lastbuffer.append("Name:"+emp_name+"\n"+"Id:"+emp_id+"\n"+"Phone:"+mobile_no+"\n"+"Email:"+email_id+"\n"+"Is Active:"+is_active+"\n"+"Description:"+description+"\n\n");
                 }
                 return lastbuffer.toString();
@@ -108,6 +121,7 @@ public class MainActivity extends AppCompatActivity
             super.onPostExecute(s);
             t1.setText(s);
             progressBar.setVisibility(View.GONE);
+            loading.setVisibility(View.GONE);
         }
     }
 }
